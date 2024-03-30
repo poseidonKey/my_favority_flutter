@@ -22,6 +22,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ListView.builder(
+                      itemCount: snapshots.data!.length,
                       itemBuilder: (BuildContext context, int index) {
                         final CategoryModel model = snapshots.data![index];
                         return ListTile(

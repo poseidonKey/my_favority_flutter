@@ -22,6 +22,7 @@ class DataScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ListView.builder(
+                      itemCount: snapshots.data!.length,
                       itemBuilder: (BuildContext context, int index) {
                         final DataModel model = snapshots.data![index];
                         return ListTile(
