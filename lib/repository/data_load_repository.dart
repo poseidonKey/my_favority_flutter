@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:fav_flutter/const/util.dart';
 import 'package:fav_flutter/model/data_model.dart';
 
 class DataLoadRepository {
   final _dio = Dio();
 
   Future<List<DataModel>> getCategories({required String category}) async {
-    print(category);
-    String targetUrl =
-        'http://192.168.219.106/fav_flutter/load_fav_data.php?category=$category';
+    // print(category);
+    String targetUrl = '${Util.url}load_fav_data.php?category=$category';
     final resp = await _dio.get(targetUrl);
     // return resp.data;
     return resp.data
@@ -17,5 +17,12 @@ class DataLoadRepository {
           ),
         )
         .toList();
+  }
+
+  Future<String> deleteData({required String no}) async {
+    // print(category);
+    String targetUrl = '${Util.url}delete_fav_data.php?no=$no';
+    await _dio.get(targetUrl);
+    return 'delete Data';
   }
 }

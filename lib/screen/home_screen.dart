@@ -24,6 +24,17 @@ class HomeScreen extends StatelessWidget {
                     child: ListView.builder(
                       itemCount: snapshots.data!.length,
                       itemBuilder: (BuildContext context, int index) {
+                        if (snapshots.hasError) {
+                          return const Center(
+                            child: Text('즐겨 찾기 정보를 가져오지 못했습니다.'),
+                          );
+                        }
+
+                        // 로딩 중일 때 보여줄 화면
+                        if (snapshots.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container();
+                        }
                         final CategoryModel model = snapshots.data![index];
                         return ListTile(
                           onTap: () async {
