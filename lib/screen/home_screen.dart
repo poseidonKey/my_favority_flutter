@@ -12,16 +12,39 @@ class HomeScreen extends StatelessWidget {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('내 즐겨찾기'),
+        appBar: PreferredSize(
+          preferredSize:
+              Size.fromHeight(MediaQuery.of(context).size.height * .07),
+          child: AppBar(
+            title: const Text(
+              '[My Internet Favorites!! 😀]',
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.deepPurpleAccent),
+            ),
+          ),
         ),
         body: FutureBuilder<List<CategoryModel>>(
             future: repository.getCategories(),
             builder: (context, snapshots) {
+              if (!snapshots.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
               return Column(
                 children: [
+                  const PreferredSize(
+                    preferredSize:
+                        Size.fromHeight(2.0), // Height of the Divider
+                    child: Divider(
+                      color: Colors.red,
+                      thickness: 2.0,
+                    ),
+                  ),
                   Expanded(
-                    child: ListView.builder(
+                    child: ListView.separated(
                       itemCount: snapshots.data!.length,
                       itemBuilder: (BuildContext context, int index) {
                         if (snapshots.hasError) {
@@ -47,9 +70,19 @@ class HomeScreen extends StatelessWidget {
                             );
                           },
                           title: Text(
-                              '[${model.fa_code}] Title : ${model.fa_name}'),
+                            '[${model.fa_code}] Category Title : ${model.fa_name}',
+                            style: const TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w600),
+                          ),
                         );
                       },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          SizedBox(
+                        height: 5,
+                        child: Container(
+                          color: Colors.grey[300],
+                        ),
+                      ),
                     ),
                   ),
                 ],

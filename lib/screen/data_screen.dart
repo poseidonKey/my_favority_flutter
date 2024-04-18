@@ -18,6 +18,11 @@ class DataScreen extends StatelessWidget {
         body: FutureBuilder<List<DataModel>>(
             future: repository.getCategories(category: category),
             builder: (context, snapshots) {
+              if (!snapshots.hasData) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
               return Column(
                 children: [
                   Expanded(
@@ -61,37 +66,68 @@ class DataScreen extends StatelessWidget {
                                           MediaQuery.of(context).size.height *
                                               .5,
                                       child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           const SizedBox(
                                             height: 80,
                                           ),
-                                          const Text(
-                                            'Data 정보',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.w600),
+                                          const Center(
+                                            child: Text(
+                                              'Data 정보',
+                                              style: TextStyle(
+                                                  fontSize: 22,
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
                                           ),
                                           const SizedBox(
                                             height: 30,
                                           ),
-                                          Text('subject : ${model.name}'),
+                                          Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Text(
+                                              'subject : ${model.name}',
+                                              style:
+                                                  const TextStyle(fontSize: 20),
+                                            ),
+                                          ),
                                           const SizedBox(
                                             height: 32,
                                           ),
-                                          Text('URL : ${model.url}'),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16),
+                                            child: Text(
+                                              'URL - ${model.url}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style:
+                                                  const TextStyle(fontSize: 20),
+                                            ),
+                                          ),
                                           const SizedBox(
                                             height: 32,
                                           ),
-                                          Text('etc : ${model.alt}'),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16),
+                                            child: Text(
+                                              'etc : ${model.alt}',
+                                              style:
+                                                  const TextStyle(fontSize: 20),
+                                            ),
+                                          ),
                                           const SizedBox(
                                             height: 32,
                                           ),
-                                          ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text('close'))
+                                          Center(
+                                            child: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text('close')),
+                                          )
                                         ],
                                       ),
                                     );
@@ -101,12 +137,25 @@ class DataScreen extends StatelessWidget {
                               //     .getCategories(category: model.name)
                               //     .then((value) => print(value));
                             },
-                            title: Text('[${model.name}], ${model.url}'),
+                            title: Text(
+                              '[${model.name}] - ${model.url}',
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         );
                       },
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Close')),
+                  )
                 ],
               );
             }),
