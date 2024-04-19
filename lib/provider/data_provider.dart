@@ -12,14 +12,12 @@ class DataNotifier extends StateNotifier<List<DataModel>> {
   final String category;
   DataNotifier({required this.category}) : super([]) {
     // print(category);
-    final tmp = getCategoryData(category: category);
-    tmp.then((value) => state = value);
+    getCategoryData(category: category);
   }
-  Future<List<DataModel>> getCategoryData({required String category}) async {
+  Future<void> getCategoryData({required String category}) async {
     DataLoadRepository repository = DataLoadRepository();
     final dbData = await repository.getCategories(category: category);
-    // print(dbData);
-    return dbData;
+    state = dbData;
   }
 
   Future<String> deleteData({required String no}) async {
@@ -27,7 +25,7 @@ class DataNotifier extends StateNotifier<List<DataModel>> {
     final dio = Dio();
     String targetUrl = '${Util.url}delete_fav_data.php?no=$no';
     await dio.get(targetUrl);
-    state = await getCategoryData(category: category);
+    await getCategoryData(category: category);
     return 'delete Data';
   }
 }
