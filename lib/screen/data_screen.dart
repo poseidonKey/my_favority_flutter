@@ -123,13 +123,21 @@ class DataScreen extends ConsumerWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Close')),
-            )
+              padding: const EdgeInsets.only(
+                  bottom: 16, top: 8, left: 16, right: 16),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Close',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    )),
+              ),
+            ),
           ],
         ),
       ),
