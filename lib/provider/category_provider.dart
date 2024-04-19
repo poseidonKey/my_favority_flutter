@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:fav_flutter/const/util.dart';
 import 'package:fav_flutter/model/category_model.dart';
 import 'package:fav_flutter/repository/category_load_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,5 +19,14 @@ class CategoryListNotifier extends StateNotifier<List<CategoryModel>> {
     CategoryLoadRepository repository = CategoryLoadRepository();
     final dbData = await repository.getCategories();
     return dbData;
+  }
+
+  Future<String> deleteCategory_all_data({required String id}) async {
+    // print(category);
+    final dio = Dio();
+    String targetUrl = '${Util.url}delete_cate_data.php?no=$id';
+    await dio.get(targetUrl);
+    state = await getCategoryData();
+    return 'delete All Category And Data';
   }
 }

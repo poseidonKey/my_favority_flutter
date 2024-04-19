@@ -1,6 +1,5 @@
 import 'package:fav_flutter/model/category_model.dart';
 import 'package:fav_flutter/provider/category_provider.dart';
-import 'package:fav_flutter/repository/category_load_repository.dart';
 import 'package:fav_flutter/screen/data_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +10,6 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<CategoryModel> state = ref.watch(categoryListProvider);
-    final repository = CategoryLoadRepository();
 
     return SafeArea(
       child: Scaffold(
@@ -28,94 +26,72 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
         ),
-        body: FutureBuilder<List<CategoryModel>>(
-            future: repository.getCategories(),
-            builder: (context, snapshots) {
-              if (!snapshots.hasData) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return Column(
-                children: [
-                  const PreferredSize(
-                    preferredSize:
-                        Size.fromHeight(2.0), // Height of the Divider
-                    child: Divider(
-                      color: Colors.red,
-                      thickness: 2.0,
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: snapshots.data!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (snapshots.hasError) {
-                          return const Center(
-                            child: Text('즐겨 찾기 정보를 가져오지 못했습니다.'),
-                          );
-                        }
+        body: Column(
+          children: [
+            const PreferredSize(
+              preferredSize: Size.fromHeight(2.0), // Height of the Divider
+              child: Divider(
+                color: Colors.red,
+                thickness: 2.0,
+              ),
+            ),
+            Expanded(
+              child: ListView.separated(
+                itemCount: state.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final CategoryModel model = state[index];
+                  return SizedBox(
+                    height: 70,
+                    child: Dismissible(
+                      key: ObjectKey(model.fa_no),
+                      onDismissed: (direction) async {
+                        if (direction == DismissDirection.startToEnd) {
+                          print(model.fa_no);
+                          final result = await ref
+                              .read(categoryListProvider.notifier)
+                              .deleteCategory_all_data(id: model.fa_no);
 
-                        // 로딩 중일 때 보여줄 화면
-                        if (snapshots.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container();
+                          if (result == 'delete All Category And Data') {
+                            print('success');
+                          } else {
+                            print('error');
+                          }
                         }
-                        final CategoryModel model = snapshots.data![index];
-                        return SizedBox(
-                          height: 70,
-                          child: Dismissible(
-                            key: ObjectKey(model.fa_no),
-                            onDismissed: (direction) async {
-                              if (direction == DismissDirection.startToEnd) {
-                                print(model.fa_no);
-
-                                final result = await repository
-                                    .deleteCategory_all_data(id: model.fa_no);
-                                if (result == 'delete All Category And Data') {
-                                  print('success');
-                                } else {
-                                  print('error');
-                                }
-                              }
-                            },
-                            child: ListTile(
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 10),
-                              onTap: () async {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => DataScreen(
-                                      category: model.fa_code,
-                                    ),
-                                  ),
-                                );
-                              },
-                              title: Padding(
-                                padding: const EdgeInsets.only(left: 12),
-                                child: Text(
-                                  '[${model.fa_code}] Category Title : ${model.fa_name}',
-                                  style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600),
-                                ),
+                      },
+                      child: ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 10),
+                        onTap: () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => DataScreen(
+                                category: model.fa_code,
                               ),
                             ),
+                          );
+                        },
+                        title: Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            '[${model.fa_code}] Category Title : ${model.fa_name}',
+                            style: const TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w600),
                           ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          SizedBox(
-                        height: 5,
-                        child: Container(
-                          color: Colors.grey[300],
                         ),
                       ),
                     ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) => SizedBox(
+                  height: 5,
+                  child: Container(
+                    color: Colors.grey[300],
                   ),
-                ],
-              );
-            }),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
