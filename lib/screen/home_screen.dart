@@ -1,13 +1,16 @@
 import 'package:fav_flutter/model/category_model.dart';
+import 'package:fav_flutter/provider/category_provider.dart';
 import 'package:fav_flutter/repository/category_load_repository.dart';
 import 'package:fav_flutter/screen/data_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final List<CategoryModel> state = ref.watch(categoryListProvider);
     final repository = CategoryLoadRepository();
 
     return SafeArea(
@@ -59,20 +62,45 @@ class HomeScreen extends StatelessWidget {
                           return Container();
                         }
                         final CategoryModel model = snapshots.data![index];
-                        return ListTile(
-                          onTap: () async {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => DataScreen(
-                                  category: model.fa_code,
+                        return SizedBox(
+                          height: 70,
+                          child: Dismissible(
+                            key: ObjectKey(model.fa_no),
+                            onDismissed: (direction) async {
+                              if (direction == DismissDirection.startToEnd) {
+                                print(model.fa_no);
+
+                                final result = await repository
+                                    .deleteCategory_all_data(id: model.fa_no);
+                                if (result == 'delete All Category And Data') {
+                                  print('success');
+                                } else {
+                                  print('error');
+                                }
+                              }
+                            },
+                            child: ListTile(
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 10),
+                              onTap: () async {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => DataScreen(
+                                      category: model.fa_code,
+                                    ),
+                                  ),
+                                );
+                              },
+                              title: Padding(
+                                padding: const EdgeInsets.only(left: 12),
+                                child: Text(
+                                  '[${model.fa_code}] Category Title : ${model.fa_name}',
+                                  style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ),
-                            );
-                          },
-                          title: Text(
-                            '[${model.fa_code}] Category Title : ${model.fa_name}',
-                            style: const TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w600),
+                            ),
                           ),
                         );
                       },

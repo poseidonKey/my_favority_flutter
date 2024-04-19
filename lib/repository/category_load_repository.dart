@@ -16,4 +16,11 @@ class CategoryLoadRepository {
         )
         .toList();
   }
+
+  Future<String> deleteCategory_all_data({required String id}) async {
+    // print(category);
+    String targetUrl = '${Util.url}delete_cate_data.php?no=$id';
+    await _dio.get(targetUrl);
+    return 'delete All Category And Data';
+  }
 }
